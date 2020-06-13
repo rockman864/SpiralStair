@@ -6,14 +6,14 @@ using Rhino.Geometry;
 
 namespace SpiralStair
 {
-    public class PlatPartComponent : GH_Component
+    public class SpiralStairTestComponent : GH_Component
     {
         /// <summary>
         /// Initializes a new instance of the PlatPart class.
         /// </summary>
-        public PlatPartComponent()
-          : base("PlatPart", "Nickname",
-              "平台段",
+        public SpiralStairTestComponent()
+          : base("SpiralTest", "test",
+              "螺旋楼梯类测试电池，输出主梁曲线和踏步",
               "Category", "Subcategory")
         {
         }

@@ -57,7 +57,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="PlatPartComponent.cs" />
+    <Compile Include="SpiralStairTestComponent.cs" />
     <Compile Include="SpiralPartComponent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SpiralStair.cs" />
