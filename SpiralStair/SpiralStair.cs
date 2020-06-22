@@ -7,10 +7,10 @@ using Rhino.Geometry;
 using Rhino.Input;
 /// <summary>
 /// Position:定位功能，有基点和初始角属性
-/// PropertyBase:楼梯属性基类，有内半径、宽度、旋转角度属性
-/// SpiralProperty:继承PropertyBase，还有总高、踏步高、踏步数量属性
+/// SpecsBase:楼梯规格基类，有内半径、宽度、旋转角度属性
+/// SpiralSpecs:继承SpecsBase，还有总高、踏步高、踏步数量属性
 /// StairMember:保存旋转楼梯构件的轴线、曲线、曲面
-/// StairBase:
+/// StairBase:/。p
 /// </summary>
 namespace SpiralStair
 {
