@@ -11,7 +11,7 @@ using Rhino.Geometry;
 
 namespace SpiralStair
 {
-    public class SpiralPartComponent : GH_Component
+    public class SpiralPartCmp : GH_Component
     {
         /// <summary>
         /// Each implementation of GH_Component must provide a public 
@@ -20,18 +20,20 @@ namespace SpiralStair
         /// Subcategory the panel. If you use non-existing tab or panel names, 
         /// new tabs/panels will automatically be created.
         /// </summary>
-        public SpiralPartComponent()
-          : base("SpiralPart", "Nickname",
-              "螺旋段",
-              "Category", "Subcategory")
+        public SpiralPartCmp()
+          : base("SpiralPart", "Spiral",
+              "螺旋楼梯踏步段",
+              "Stair", "分段")
         {
         }
 
         /// <summary>
-        /// Registers all the input parameters for this component.
+        /// 主要包含两个输入参数：起点定位、螺旋段规格
         /// </summary>
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
+            pManager.AddGenericParameter("StartPosition", "StartPosition", "旋转楼梯螺旋段起点", GH_ParamAccess.item);
+            pManager.AddGenericParameter("Dimension", "Dimension", "螺旋段规格尺寸", GH_ParamAccess.item);
         }
 
         /// <summary>
@@ -40,8 +42,9 @@ namespace SpiralStair
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
 
         {
-            pManager.AddGenericParameter("BeamAxis", "beam", "内外主梁轴线", GH_ParamAccess.list);
-            pManager.AddGenericParameter("StepAxis", "step", "踏步轴线", GH_ParamAccess.list);
+            pManager.AddGenericParameter("SpiralPart", "SpiralPart", "旋转楼梯螺旋段", GH_ParamAccess.item);
+            pManager.AddGenericParameter("EndPosition", "EndPosition", "旋转楼梯螺旋段终点", GH_ParamAccess.item);
+
         }
 
         /// <summary>
@@ -51,14 +54,15 @@ namespace SpiralStair
         /// to store data in output parameters.</param>
         protected override void SolveInstance(IGH_DataAccess DA)
         {
+            Position basePosi = new Position();
+            SpiralSpecs dimension = new SpiralSpecs();
             SpiralPart p1 = new SpiralPart();
-            p1.GenerateGeom();
-            Polyline innerAxis = p1.StairMembers.InnerAxis;
-            Polyline outAxis = p1.StairMembers.OutAxis;
-            List<Polyline> beamAxis = new List<Polyline> { innerAxis, outAxis };
-            DA.SetDataList(0, beamAxis);
-            DA.SetDataList(1, p1.StairMembers.StepAxis);
-           
+            if (DA.GetData(0, ref basePosi)&& DA.GetData(1, ref dimension))
+            {
+                p1 = new SpiralPart(basePosi, dimension);
+            }
+            DA.SetData(0, p1);
+            DA.SetData(1, p1.EndPst);
         }
 
         /// <summary>

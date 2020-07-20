@@ -10,7 +10,9 @@ using Rhino.Input;
 /// PropertyBase:楼梯属性基类，有内半径、宽度、旋转角度属性
 /// SpiralProperty:继承PropertyBase，还有总高、踏步高、踏步数量属性
 /// StairMember:保存旋转楼梯构件的轴线、曲线、曲面
-/// StairBase:
+/// StairBase:旋转楼梯基类，具有属性：构件、起始定位、终点定位、部件规格，具有方法：设置终点定位、生成构件
+/// SpiralPart:螺旋部分的楼梯，主要是重写了生成构件方法
+/// PlatformPart:
 /// </summary>
 namespace SpiralStair
 {
@@ -24,6 +26,8 @@ namespace SpiralStair
 
         public Position()
         {
+            BasePoint = new Point3d(0,0,0);
+            Angle = 0;
         }
         public Position(Point3d pt, double angle)
         {
@@ -37,7 +41,7 @@ namespace SpiralStair
         }
     }
     /// <summary>
-    /// 螺旋楼梯的规格基类，有内半径、宽度、旋转角度属性
+    /// 螺旋楼梯的规格基类，有内半径、宽度、旋转角度属性,螺旋段和平台段规格中相同的部分
     /// </summary>
     class SpecsBase
     {
@@ -51,7 +55,7 @@ namespace SpiralStair
             Width = 1500;
             RotateAngle = 90;
         }
-        public SpecsBase(double innerR, double width, double rotateAngle)
+        public SpecsBase(double innerR=700, double width=1500, double rotateAngle=90)
         {
             InnerR = innerR;
             Width = width;
@@ -59,6 +63,9 @@ namespace SpiralStair
         }
 
     }
+    /// <summary>
+    /// 螺旋段规格类，除了规格基类的属性（内半径、宽度、旋转角度、高度）外，还有踏步高度、踏步数量属性
+    /// </summary>
 
     class SpiralSpecs : SpecsBase
     {
@@ -66,25 +73,28 @@ namespace SpiralStair
         public int StepCount { get; set; }
         public SpiralSpecs() : base()
         {
-            StepH = 165;
-            RotateAngle = 135;
-            StepCount = 14;
+            StepH = 160;
+            RotateAngle = 360;
+            StepCount = 25;
             Height = StepH * StepCount;
         }
-        public SpiralSpecs(double innerR, double width, double height, double rotateAngle, double stepH) : base(innerR, width, rotateAngle)
+        public SpiralSpecs(double innerR=700, double width=1500, double height=4000, double rotateAngle=360, double stepH=165) : base(innerR, width, rotateAngle)
         {
             Height = height;
             StepH = stepH;
             StepCount = Convert.ToInt32(Height / StepH);
 
         }
-        public SpiralSpecs(double innerR, double width, double rotateAngle, double stepH, int stepCount) : base(innerR, width, rotateAngle)
+        public SpiralSpecs(double innerR=700, double width=1500, double rotateAngle=360, double stepH=160, int stepCount=25) : base(innerR, width, rotateAngle)
         {
             StepH = stepH;
             StepCount = stepCount;
             Height = StepH * StepCount;
         }
     }
+    /// <summary>
+    /// 楼梯构件类，主要有以下属性：内主梁几何体（曲面、曲线、多段线）、外主梁几何体（曲面、曲线、多段线）、踏步线段
+    /// </summary>
     class StairMember
     {
         public Polyline InnerAxis { get; set; }
@@ -101,7 +111,7 @@ namespace SpiralStair
         }
     }
     /// <summary>
-    /// 旋转楼梯基类，具有构件、起始定位、终点定位属性
+    /// 旋转楼梯基类，具有属性：构件、起始定位、终点定位、部件规格，具有方法：设置终点定位、生成构件
     /// </summary>
     abstract class StairBase
     {
@@ -116,8 +126,14 @@ namespace SpiralStair
         }
         public Position EndPst
         {
-            get { return endPosition; }
-            set { endPosition = value; }
+            get
+            {
+                return endPosition;
+            }
+            set
+            {
+                endPosition = value;
+            }
         }
         public StairMember StairMembers
         {
@@ -131,10 +147,12 @@ namespace SpiralStair
         }
         protected StairBase()
         {
+            StartPst = new Position();
         }
         protected StairBase(Position strPst)
         {
             StartPst = strPst;
+
         }
         public void SetEndPst()
         {
@@ -144,22 +162,37 @@ namespace SpiralStair
         public virtual void GenerateGeom()
         { }
     }
+    /// <summary>
+    /// 螺旋部分的楼梯，主要是重写了生成构件方法
+    /// </summary>
     class SpiralPart : StairBase
     {
+        SpiralSpecs spcs;
         public SpiralPart() : base()
         {
-            PartSpecs = new SpiralSpecs();
+            spcs = new SpiralSpecs();
+            PartSpecs = spcs;
+            SetEndPst();
         }
+        /// <summary>
+        /// 螺旋段构造函数，主要使用起点参数和螺旋段规格参数
+        /// </summary>
+        /// <param name="strPosition"></param>
+        /// <param name="spriralProp">螺旋段规格参数：包含内半径、宽度、旋转角度、踏步高度、踏步数量</param>
         public SpiralPart(Position strPosition, SpiralSpecs spriralProp) : base(strPosition)
         {
-            PartSpecs = spriralProp;
+            spcs = spriralProp;
+            PartSpecs = spcs;
+            SetEndPst();
         }
 
-
+        /// <summary>
+        /// 构件生成方法，主要生成主构件曲线、多段线、踏步线段；曲面生成后续添加
+        /// </summary>
         public override void GenerateGeom()
         {
-            SpiralSpecs spcs = (SpiralSpecs)PartSpecs;
-            List<Point3d> innerPts = CreatPoints(this.StartPst,spcs, this.PartSpecs.InnerR);
+            //SpiralSpecs spcs = (SpiralSpecs)PartSpecs;
+            List<Point3d> innerPts = CreatPoints(this.StartPst,spcs, spcs.InnerR);
             List<Point3d> outPts = CreatPoints(this.StartPst, spcs, spcs.InnerR + spcs.Width);
             StairMembers.InnerCurve = Curve.CreateInterpolatedCurve(innerPts, 3);
             StairMembers.OutCurve = Curve.CreateInterpolatedCurve(outPts, 3);
@@ -191,17 +224,27 @@ namespace SpiralStair
             return plist;
         }
     }
+    /// <summary>
+    /// 平台段类，主要重写构件生成方法。
+    /// </summary>
     class PlatFormPart : StairBase
     {
 
         public PlatFormPart() : base()
         {
             PartSpecs = new SpecsBase();
+            SetEndPst();
 
         }
+        /// <summary>
+        /// 平台端构造函数，主要使用起点参数和平台规格参数
+        /// </summary>
+        /// <param name="strPst">起点参数，主要包含起点和角度</param>
+        /// <param name="platFormSpecs">平台规格参数，主要包含内半径、宽度、旋转角度</param>
         public PlatFormPart(Position strPst, SpecsBase platFormSpecs) : base(strPst)
         {
             PartSpecs = platFormSpecs;
+            SetEndPst();
         }
         public override void GenerateGeom()
         {

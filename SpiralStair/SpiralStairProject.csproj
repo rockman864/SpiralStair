@@ -57,8 +57,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BasePositionCmp.cs" />
+    <Compile Include="CreateStairCmp.cs" />
+    <Compile Include="PlatformPartCmp.cs" />
+    <Compile Include="PlatformSpecsCmp.cs" />
+    <Compile Include="SpiralSpecsCmp.cs" />
     <Compile Include="SpiralStairTestComponent.cs" />
-    <Compile Include="SpiralPartComponent.cs" />
+    <Compile Include="SpiralPartCmp.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SpiralStair.cs" />
     <Compile Include="SpiralStairInfo.cs" />

@@ -2,7 +2,7 @@
 using System.Drawing;
 using Grasshopper.Kernel;
 
-namespace SpiralStair
+namespace SpiralStairCls
 {
     public class SpiralStairInfo : GH_AssemblyInfo
     {

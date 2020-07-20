@@ -6,15 +6,15 @@ using Rhino.Geometry;
 
 namespace SpiralStair
 {
-    public class SpiralStairTestComponent : GH_Component
+    public class CreateStairCmp : GH_Component
     {
         /// <summary>
-        /// Initializes a new instance of the PlatPart class.
+        /// Initializes a new instance of the CreateStairCmp class.
         /// </summary>
-        public SpiralStairTestComponent()
-          : base("SpiralTest", "test",
-              "螺旋楼梯类测试电池，输出主梁曲线和踏步",
-              "Stair", "Test")
+        public CreateStairCmp()
+          : base("CreateStair", "CreateStair",
+              "创建旋转楼梯模型，包含曲面、曲线、线段",
+              "Stair", "生成模型")
         {
         }
 
@@ -23,6 +23,7 @@ namespace SpiralStair
         /// </summary>
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
+            pManager.AddGenericParameter("StairParts", "StairParts", "螺旋楼梯各个部件", GH_ParamAccess.list);
         }
 
         /// <summary>
@@ -30,9 +31,9 @@ namespace SpiralStair
         /// </summary>
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
-            pManager.AddCurveParameter("beamCurve", "crv", "主梁弧线", GH_ParamAccess.list);
-            pManager.AddLineParameter("StepLines", "step", "踏步轴线", GH_ParamAccess.list);
-
+            pManager.AddBrepParameter("Surfaces", "Srf", "楼梯曲面", GH_ParamAccess.list);
+            pManager.AddCurveParameter("Curves", "Crv", "楼梯曲线", GH_ParamAccess.list);
+            pManager.AddLineParameter("Lines", "lines", "楼梯线段", GH_ParamAccess.list);
         }
 
         /// <summary>
@@ -41,35 +42,26 @@ namespace SpiralStair
         /// <param name="DA">The DA object is used to retrieve from inputs and store in outputs.</param>
         protected override void SolveInstance(IGH_DataAccess DA)
         {
-            SpiralPart prt1 = new SpiralPart();//第一段
-            PlatFormPart prt2 = new PlatFormPart();//第二段
-            SpiralPart prt3 = new SpiralPart();//第三段
-            PlatFormPart prt4 = new PlatFormPart();//第四段
-            SpiralPart prt5 = new SpiralPart();//第五段
-            List<StairBase> StairGroups = new List<StairBase> { prt1,prt2,prt3,prt4,prt5};
-
+            List<StairBase> StairGroups = new List<StairBase>();
+            DA.GetDataList(0, StairGroups);
             List<Curve> crvs = new List<Curve>();
             List<Line> steps = new List<Line>();
-            for (int i=0;i<StairGroups.Count;i++)
+            List<Polyline> beamLines = new List<Polyline>();
+            for (int i = 0; i < StairGroups.Count; i++)
             {
-                if (i>0)
-                {
-                    StairGroups[i].StartPst = StairGroups[i - 1].EndPst;
-                }
-                StairGroups[i].SetEndPst();
                 StairGroups[i].GenerateGeom();
                 StairMember mi = StairGroups[i].StairMembers;
                 crvs.Add(mi.InnerCurve);
                 crvs.Add(mi.OutCurve);
-                if(StairGroups[i].GetType()==typeof(SpiralPart))
+                if (StairGroups[i].GetType() == typeof(SpiralPart))
                 {
                     steps.AddRange(mi.StepAxis);
                 }
+                beamLines.Add(mi.InnerAxis);
+                beamLines.Add(mi.OutAxis);
             }
-            DA.SetDataList(0, crvs);
-            DA.SetDataList(1, steps);
-
-
+            DA.SetDataList(1, crvs);
+            DA.SetDataList(2, steps);
 
         }
 
@@ -91,7 +83,7 @@ namespace SpiralStair
         /// </summary>
         public override Guid ComponentGuid
         {
-            get { return new Guid("e3efbf8e-2c89-4c26-bc04-d2422093ddb8"); }
+            get { return new Guid("a2e748df-4020-494e-b5f6-8c36b194f87e"); }
         }
     }
 }
