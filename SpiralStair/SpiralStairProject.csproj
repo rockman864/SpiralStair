@@ -60,7 +60,6 @@
     <Compile Include="020BasePositionCmp.cs" />
     <Compile Include="041CreateStairCmp.cs" />
     <Compile Include="032PlatformPartCmp.cs" />
-    <Compile Include="022PlatformSpecsCmp.cs" />
     <Compile Include="021SpiralSpecsCmp.cs" />
     <Compile Include="SpiralStairTestComponent.cs" />
     <Compile Include="031SpiralPartCmp.cs" />
