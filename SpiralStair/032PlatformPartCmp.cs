@@ -14,7 +14,7 @@ namespace SpiralStair
         public PlatformPartCmp()
           : base("PlatformPart", "Platform",
               "螺旋楼梯平台段",
-              "Stair", "分段")
+              "Stair", "02_Part")
         {
         }
 
@@ -23,8 +23,8 @@ namespace SpiralStair
         /// </summary>
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
-            pManager.AddGenericParameter("StartPosition", "StartPosition", "平台段起点", GH_ParamAccess.item);
-            pManager.AddGenericParameter("Dimension", "Dimension", "平台规格尺寸", GH_ParamAccess.item);
+            pManager.AddGenericParameter("PreviousPart", "PrePart", "前一段", GH_ParamAccess.item);
+            pManager.AddNumberParameter("RotateAngle", "Angle", "平台规格尺寸", GH_ParamAccess.item,90);
         }
 
         /// <summary>
@@ -32,8 +32,8 @@ namespace SpiralStair
         /// </summary>
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
-            pManager.AddGenericParameter("SpiralPart", "SpiralPart", "平台段", GH_ParamAccess.item);
-            pManager.AddGenericParameter("EndPosition", "EndPosition", "平台段终点", GH_ParamAccess.item);
+            pManager.AddGenericParameter("PlatformPart", "PlatformPart", "平台段", GH_ParamAccess.item);
+            pManager.AddGenericParameter("EndPostion", "EndPosition", "平台段末段定位", GH_ParamAccess.item);
         }
 
         /// <summary>
@@ -42,10 +42,20 @@ namespace SpiralStair
         /// <param name="DA">The DA object is used to retrieve from inputs and store in outputs.</param>
         protected override void SolveInstance(IGH_DataAccess DA)
         {
-            Position pos = new Position();
-            DA.GetData(0, ref pos);
-            SpecsBase spcs = new SpecsBase();
-            DA.GetData(1, ref spcs);
+            SpiralPart part1 = new SpiralPart();
+            Position pos;
+            PlatformSpecs spcs = new PlatformSpecs();
+            double angle = 0;
+
+            DA.GetData(0, ref part1);
+            DA.GetData(1, ref angle);
+            //获得前一个部件的属性，然后分配给这个部件
+            pos = part1.EndPst;
+            var partDim = part1.SpiralDimension;
+            spcs.InnerR = partDim.InnerR;
+            spcs.Width = partDim.Width;
+            spcs.RotateAngle = angle;
+            spcs.Direction = partDim.Direction;
             PlatFormPart platform = new PlatFormPart(pos, spcs);
             DA.SetData(0, platform);
             DA.SetData(1, platform.EndPst);

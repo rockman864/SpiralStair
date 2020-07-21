@@ -10,11 +10,11 @@ namespace SpiralStair
     {
         /// <summary>
         /// Initializes a new instance of the CreateStairCmp class.
-        /// </summary>
+        /// </summary>nnnnnnnnn
         public CreateStairCmp()
           : base("CreateStair", "CreateStair",
               "创建旋转楼梯模型，包含曲面、曲线、线段",
-              "Stair", "生成模型")
+              "Stair", "03_Assembley")
         {
         }
 
@@ -32,8 +32,8 @@ namespace SpiralStair
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
             pManager.AddBrepParameter("Surfaces", "Srf", "楼梯曲面", GH_ParamAccess.list);
-            pManager.AddCurveParameter("Curves", "Crv", "楼梯曲线", GH_ParamAccess.list);
-            pManager.AddLineParameter("Lines", "lines", "楼梯线段", GH_ParamAccess.list);
+            pManager.AddCurveParameter("BeamLines", "BeamLines", "主梁轴线", GH_ParamAccess.list);
+            pManager.AddLineParameter("Steplines", "Steplines", "踏步轴线", GH_ParamAccess.list);
         }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace SpiralStair
                 beamLines.Add(mi.InnerAxis);
                 beamLines.Add(mi.OutAxis);
             }
-            DA.SetDataList(1, crvs);
+            DA.SetDataList(1, beamLines);
             DA.SetDataList(2, steps);
 
         }

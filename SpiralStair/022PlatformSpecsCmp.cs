@@ -12,9 +12,9 @@ namespace SpiralStair
         /// Initializes a new instance of the PlatformSpecsCmp class.
         /// </summary>
         public PlatformSpecsCmp()
-          : base("PlatformDimension", "Dimension",
+          : base("PlatformParameters", "Parameters",
               "休息平台尺寸,主要包含内半径、宽度、旋转角度",
-              "Stair", "参数")
+              "Stair", "01_Define")
         {
         }
 
@@ -48,7 +48,7 @@ namespace SpiralStair
             DA.GetData(0, ref radius);
             DA.GetData(1, ref width);
             DA.GetData(2, ref angle);
-            SpecsBase dimension = new SpecsBase(radius, width, angle);
+            PlatformSpecs dimension = new PlatformSpecs(radius, width, angle);
             DA.SetData(0, dimension);
         }
 

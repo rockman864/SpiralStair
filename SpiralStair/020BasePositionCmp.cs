@@ -14,7 +14,7 @@ namespace SpiralStair
         public BasePositionCmp()
           : base("BasePoint", "Base",
               "起始基点定位，主要定义起点和起始角度",
-              "Stair", "参数")
+              "Stair", "01_Define")
         {
         }
 

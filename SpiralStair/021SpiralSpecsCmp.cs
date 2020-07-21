@@ -12,9 +12,9 @@ namespace SpiralStair
         /// Initializes a new instance of the SpiralSpecsCmp class.
         /// </summary>
         public SpiralSpecsCmp()
-          : base("SpiralDimension", "Dim",
+          : base("SpiralParameters", "Parameters",
               "螺旋段楼梯规格属性，主要包含内半径、宽度、旋转角度、踏步高度、踏步数量",
-              "Stair", "参数")
+              "Stair", "01_Define")
         {
         }
 
@@ -23,11 +23,12 @@ namespace SpiralStair
         /// </summary>
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
-            pManager.AddNumberParameter("Radius", "Radius", "螺旋楼梯内半径", GH_ParamAccess.item,700);
-            pManager.AddNumberParameter("Width", "Width", "螺旋楼梯宽度", GH_ParamAccess.item,1500);
-            pManager.AddNumberParameter("Angle", "Angle", "螺旋楼梯总旋转角度", GH_ParamAccess.item,360);
-            pManager.AddNumberParameter("Height", "Height", "每个踏步高度", GH_ParamAccess.item,160);
-            pManager.AddIntegerParameter("Counts", "Counts", "踏步的数量", GH_ParamAccess.item,24);
+            pManager.AddNumberParameter("Radius", "Radius", "螺旋楼梯内半径", GH_ParamAccess.item,300);
+            pManager.AddNumberParameter("Width", "Width", "螺旋楼梯宽度", GH_ParamAccess.item,3000);
+            pManager.AddNumberParameter("Angle", "Angle", "螺旋楼梯总旋转角度", GH_ParamAccess.item,286);
+            pManager.AddNumberParameter("Height", "Height", "每个踏步高度", GH_ParamAccess.item,150);
+            pManager.AddIntegerParameter("Counts", "Counts", "踏步的数量", GH_ParamAccess.item,26);
+            pManager.AddBooleanParameter("Direction", "Dir", "旋转方向，true为逆时针,false为顺时针", GH_ParamAccess.item,false);
         }
 
         /// <summary>
@@ -49,12 +50,14 @@ namespace SpiralStair
             Double angle = new double();
             Double height = new double();
             int counts = new int();
+            Boolean boolDir = true;
             DA.GetData(0, ref radius);
             DA.GetData(1, ref width);
             DA.GetData(2, ref angle);
             DA.GetData(3, ref height);
             DA.GetData(4, ref counts);
-            SpecsBase dimension = new SpiralSpecs(radius, width, angle, height, counts);
+            DA.GetData(5, ref boolDir);
+            SpiralSpecs dimension = new SpiralSpecs(radius, width, angle, height, counts,boolDir);
             DA.SetData(0, dimension);
 
         }

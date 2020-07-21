@@ -23,7 +23,7 @@ namespace SpiralStair
         public SpiralPartCmp()
           : base("SpiralPart", "Spiral",
               "螺旋楼梯踏步段",
-              "Stair", "分段")
+              "Stair", "02_Part")
         {
         }
 
